@@ -2,13 +2,15 @@ import os
 import time
 import argparse
 import logging
+import re
 from multiprocessing import Pool, cpu_count
 
 def normalize_chromosome(chrom):
     """Padroniza os nomes dos cromossomos para uma comparação mais robusta."""
-    chrom = chrom.replace("Chr", "ChrA")  # Ajusta nomes que podem estar abreviados
-    chrom = chrom.replace("ChrA0", "ChrA")  # Remove zeros à esquerda
-    return chrom
+    return re.sub(r'Chr(\d{2})([A-Z])', r'Chr\2\1', chrom) #Funciona com LAPurple, conferir com os outros genomas antes de executar
+    #chrom = chrom.replace("Chr", "ChrA")  # Ajusta nomes que podem estar abreviados
+    #chrom = chrom.replace("ChrA0", "ChrA")  # Remove zeros à esquerda
+    #return chrom
 
 def parse_distritype(file_path):
     """Parse the distritype.txt file into a list of dictionaries."""
@@ -23,8 +25,8 @@ def parse_distritype(file_path):
                 entry[key] = value
             else:
                 logging.warning(f"Skipping line with unexpected format: {line}")
-        if "Chromosome" in entry:
-            entry["Chromosome"] = normalize_chromosome(entry["Chromosome"])
+#        if "Chromosome" in entry:
+#            entry["Chromosome"] = normalize_chromosome(entry["Chromosome"])
         parsed_data.append(entry)
     return parsed_data
 
